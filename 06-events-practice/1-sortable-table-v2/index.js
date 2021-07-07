@@ -11,28 +11,15 @@ export default class SortableTable {
 
     this.render();
     this.sort(this.sortId, this.sortOrder);
-    this.subElements.header.addEventListener("pointerdown", this.sortHandler);
   }
 
   sortHandler = (event) => {
-    if (event.target.closest(".sortable-table__cell[data-id]")) {
-      const id = event.target.parentNode.dataset.id;
-      const sortable = event.target.parentNode.dataset.sortable;
-      let order = event.target.parentNode.dataset.order;
+    const column = event.target.closest('[data-sortable="true"]');
 
-      switch (order) {
-        case "asc":
-          order = "desc";
-          break;
-        case "desc":
-        default:
-          order = "asc";
-          break;
-      }
-
-      if (sortable === "true") {
-        this.sort(id, order);
-      }
+    if (column) {
+      const id = column.dataset.id;
+      const order = column.dataset.order === "desc" ? "asc" : "desc";
+      this.sort(id, order);
     }
   };
 
@@ -94,6 +81,7 @@ export default class SortableTable {
     this.element = element.firstElementChild;
 
     this.subElements = this.getSubElements(this.element);
+    this.subElements.header.addEventListener("pointerdown", this.sortHandler);
   }
 
   getSubElements(element) {

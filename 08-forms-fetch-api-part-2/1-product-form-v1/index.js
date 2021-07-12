@@ -16,6 +16,7 @@ export default class ProductForm {
   onUploadImage = async () => {
     const formData = new FormData();
     formData.append("image", this.inputImage.files[0]);
+    const nameImageFile = this.inputImage.files[0].name;
 
     try {
       const response = await fetch("https://api.imgur.com/3/image", {
@@ -30,14 +31,17 @@ export default class ProductForm {
       const imageData = await response.json();
 
       if (imageData.success) {
-        const newImageElement = this.getFormImage(imageData.data.link, "test");
+        const newImageElement = this.getFormImage(
+          imageData.data.link,
+          nameImageFile
+        );
         this.subElements.sortableList.insertAdjacentHTML(
           "beforeend",
           newImageElement
         );
         this.productData.images.push({
           url: imageData.data.link,
-          source: "test",
+          source: nameImageFile,
         });
       }
     } catch (error) {
@@ -55,9 +59,9 @@ export default class ProductForm {
       price: +productForm.querySelector(`#price`).value,
       quantity: +productForm.querySelector(`#quantity`).value,
       status: +productForm.querySelector(`#status`).value,
-      title: escapeHtml(productForm.querySelector(`#title`).value),
-      description: escapeHtml(productForm.querySelector(`#description`).value),
-      subcategory: escapeHtml(productForm.querySelector(`#subcategory`).value),
+      title: productForm.querySelector(`#title`).value,
+      description: productForm.querySelector(`#description`).value,
+      subcategory: productForm.querySelector(`#subcategory`).value,
       images: this.productData.images,
     };
 
@@ -83,7 +87,7 @@ export default class ProductForm {
   };
 
   constructor(productId) {
-    this.productId = productId; //"kalkulator-buhgalterskij-casio-ms-20uc-we-s-ec";
+    this.productId = productId;
   }
 
   async loadCategories(sort = "weight", refs = "subcategory") {
